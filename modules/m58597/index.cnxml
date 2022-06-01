@@ -1,0 +1,18 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+
+<title>Introduction and Motiviation</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m58597</md:content-id>
+  <md:title>Introduction and Motiviation</md:title>
+  <md:abstract/>
+  <md:uuid>ec8650b8-1816-4264-ac8b-f53ffaf5a61d</md:uuid>
+</metadata>
+
+<content>
+  <para id="eip-462">The guitar pedal has been used since the 1950’s to amplify, modulate, delay, and otherwise modify the sound of a guitar to create interesting sound effects.  Today, there are literally hundreds of guitar pedals on the market that can do compression, wah-wah, overdrive, chorus, flanger, phase-shift, time-delay, and reverberation sound effects. In particular, there is a class of effects in which the pitch is shifted in order to create intervals. However, many of the guitar pedals currently available can only make the same interval for each pitch--even though music theory tells us that in a key, not all chords are harmonized the same way. Thus, we designed a pre-amp that will harmonize a note depending on the chosen key.  Surprisingly, of the many guitar pedals available, we could not find a guitar pedal on the market that could harmonize a note at all, much less harmonize based on different keys.  Soon, we would learn why this guitar pedal does not exist.
+</para><para id="delete_me">Knowing that there is always a first time for everything, we were never phased.  Currently, guitar pedals which change the tone can only do so in fixed intervals--which allows for incomplete harmonization. We wanted to design a guitar pedal which could harmonize different notes in the key with a different interval--which allows for better harmonization. 
+  </para><para id="eip-341">Our original strategy was as follows: first, we sampled at 44.1 kHz, a frequency greater than the Nyquist frequency and the standard for sampling music. Then, we employed the FFT to analyze the signal in the frequency domain. Third, we identified the pitch. Fourth, we modulated the pitch by a major third or a minor third depending on the pitch. Fifth, we combined the modified signal and the original signal to create the harmonized signal. Last, we took the IFFT and sent the new signal to the amplifier. 
+</para><para id="eip-432">Like many engineering projects, the project did not turn out to be quite as easy as our projection.  Reliably identifying the note being played in real-time is difficult, as is playing a harmonized note that doesn’t sound choppy yet changes when a new note is played.  Read on to see if we found the key.
+</para></content>
+
+</document>

@@ -1,0 +1,20 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+
+<title>Conclusion</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m58621</md:content-id>
+  <md:title>Conclusion</md:title>
+  <md:abstract/>
+  <md:uuid>19066a83-a85e-4ca3-a765-cfa7f0dcaa4e</md:uuid>
+</metadata>
+
+<content>
+  <para id="delete_me">In the end, our team were mostly successful in our original plan to harmonize each note in real-time.  We could correctly identify the note being played, identify the correct octave, calculate the frequencies of the notes required to complete the triad, and then output the harmonized result.  In practice though, there remain challenges that limit the practical use of the device.  I will list these challenges in order of difficulty and importance.  
+</para><para id="eip-932">First, a small delay was necessary to allow the guitar sound itself to stabilize.  If this delay is not present, the harmonized frequency change very quickly, resulting in an unsettling sound effect.  To solve this problem, a more complex note identification program is necessary.  This program would need to (1) ignore the initial “pluck” of the string and (2) use knowledge of the harmonics to more accurately predict the note being played.  However, note that this delay still results in a fully-functioning affect--in fact, one of the effects of the Eventide’s Harmonizer is a delayed harmony (a.k.a. what we implemented).  The only difference is that the Eventide’s max allowable speed is probably higher than our maximum speed.
+</para><para id="eip-846">Second, our “harmonized” notes were pure sine waves at the specified frequency, which sounds like a pure tone as opposed to a guitar sound.  Using a “plucked-string” algorithm and/or other synthesizer techniques, we could make the harmonized notes sound as if they were played by different instruments such as a guitar, violins, trumpets, tubas, harp, organ, or piano.  This functionality would greatly improve the appeal of the device.
+</para><para id="eip-788">Third, we could add the “pedal” hardware in order to give the user the ability to turn the harmonized effect on or off while he’s playing.  
+</para><para id="eip-525">Fourth, due to the exponential nature of frequency (to reach the next octave, the frequency doubles), note resolution was much better at higher frequencies. This problem could be solved by upsampling or sampling for a longer period of time, either of which would result in higher resolution in the frequency domain.   
+</para><para id="eip-582">Fifth, we only had two “presets” for how device would harmonize each key.  For the key of C, the first harmonizes each note to stay within the key of C Major.  These chords are thus C, F, G major, D, E, A minor, and B diminished. The second preset was harmonized so that each note stays within has C minor, which is made of the chords of C,D,  F, G minor, Eb, Ab, and Bb major.  Neither preset harmonizes notes not in the key.  However, we can trivially extend our code to add presets of more types of codes such as Dominant, Major, Minor, Augmented, Diminished, Seventh, Ninth, … We could even allow for a manual mode in which the user can specify a specific interval for each of the 12 notes in the octave. 
+</para><para id="eip-479">In conclusion, we were able to create a pre-amplifier that created an interesting harmonizaiton sound effect--especially if you like alien noises. The link below is of our poster.</para><para id="eip-344">We would like to thank Richard Baraniuk, Jeff Lievense and Nancy Jia for being T.A.'s for 301.</para><para id="eip-951">https://drive.google.com/file/d/0B4uCk1m2OE-JT05mc19tc05NbjQ/view?usp=sharing</para></content>
+
+</document>

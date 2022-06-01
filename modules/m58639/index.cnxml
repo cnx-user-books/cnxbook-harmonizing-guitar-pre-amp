@@ -1,0 +1,22 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+
+<title>History of Guitar Pedals</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m58639</md:content-id>
+  <md:title>History of Guitar Pedals</md:title>
+  <md:abstract/>
+  <md:uuid>6808af34-0318-4cf6-8b3d-9faddfb21871</md:uuid>
+</metadata>
+
+<content>
+  <para id="delete_me">Technology is amazing.  For example, when I wake up in the morning, I reach for my smartphone and turn-on some music to start my day.  And yes, those are the opening lyrics to “More than a Feeling” by Boston, you can put away your smartphone now.
+  </para><para id="eip-0"><media id="Boston" alt="rice">
+<image mime-type="image/png" src="../../media/boston_band.png"/>
+</media></para><para id="eip-684">Barry Goudreau, Tom Scholz, Sib Hashian, Brad Delp, Fran Sheehan, in 1977.  
+</para><para id="eip-285">But what you may not know is that Tom Scholz, the founding member of Boston and its primary songwriter, attended MIT and actually invented a guitar pedal to use. In doing so, Scholz joined the long tradition of musicians discovering ways to change their sound to make theirs sounds different, unique, and interesting.  Witness the vast number of trumpet mutes: straight, cup plunger, bucket, harmon stem in/stem out.   But because the electric guitar needs electronics to even make a sound, guitarists realized that by changing the electronics, they could create new and interesting sounds. In the 1950’s and 60’s, guitarists changed the electronics by actually physically modifying (breaking) the hardware by using razor blades to cut up the cones in the amplifiers to make the guitar sound “gritty.”  Soon, guitarists soon realized that instead of breaking the current technology, they could simply create ones to deliberately change the sound --and the guitar pedal was born.
+</para><para id="eip-263">In doing so, Scholz joined the long tradition of musicians discovering ways to change their sound to make theirs sounds different, unique, and interesting.  Witness the vast number of trumpet mutes: straight, cup plunger, bucket, harmon stem in/stem out.   But because the electric guitar needs electronics to even make a sound, guitarists realized that by changing the electronics, they could create new and interesting sounds.  Guitarists soon realized that they could simply create new electronics to deliberately change the sound --and the guitar pedal was born.
+</para><para id="eip-237">There is a “signal chain” where the electrical guitar is connected to the “guitar pedal” which is then connected to the large amplifier.  The effects can be split into three main areas: volume and dynamic, modulation, and time-based effects.  Dynamic effects include those of compression (makes dynamic range of guitar smaller), wah-wah (makes sound louder-then softer-then-louder, like the word wah-wah), and overdrive (distorts the sound by adding harmonics and inharmonics, originally made by making the vacuum tube larger).  Modulation effects can include a flanger (adds the time-delayed output to itself in various intervals, resulting in a comb-filter in frequency domain), phase shifters (change the phase in frequency domain). Time-based effects include delay (play sound after fixed period), and reverberation (make a reverberation sound by making delays of a sound in smaller and smaller amplitude).
+</para><para id="eip-135">Currently, the Eventide “Pitchfactor” is one of the current leaders in pitch-modification.  One of the cool effects that the “Pitchfactor” can do is output harmonized notes at a specific delay.  Using this device, a guitar player can harmonize with himself and even make chords.  However, the “Pitchfactor” is $500, so our group tried to see if we could make a similar effect at much cheaper cost.
+</para><para id="eip-838">Citation: Wikipedia, "Effects Units"</para></content>
+
+</document>

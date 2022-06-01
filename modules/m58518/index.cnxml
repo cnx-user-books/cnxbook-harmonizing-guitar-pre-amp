@@ -1,0 +1,161 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+
+<title>Implementation</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m58518</md:content-id>
+  <md:title>Implementation</md:title>
+  <md:abstract/>
+  <md:uuid>4e6ee94e-92b6-4e42-97aa-f7df9db62567</md:uuid>
+</metadata>
+
+<content>
+  <section id="eip-834">
+<title>High Level Design</title>
+<para id="para1">
+The high level design of our project is as follows. We have a Behringer UCA222 that serves as the interface between the pickup in the guitar and the computer. The final output is played on the speaker that is connected to the UCA via a 3.5mm audio jack. The UCA222 takes the guitar input through dual channel RCA ports and forwards the signal to the computer through USB. We then do computation and analysis, in Python, on the sample signal to determine the frequency and the identity of the note being played, and depending on the note synthesis the correct harmony. The synthesized signal is fed back into the UCA222 and outputted on the speaker.
+</para> 
+</section>
+
+<section id="eip-973">
+<media id="BlockDiagram" alt="A Block Diagram representation of our system.">	   
+  <image mime-type="image/png" src="../../media/blockDiagram.png"/>		 
+</media>
+<para id="tag1">
+Figure 1: Block Diagram of our System 
+</para>
+</section>
+
+<section id="figure2">
+<media id="Setup" alt="A picture of our project setup.">	   
+  <image mime-type="image/jpeg" src="../../media/DSC05932.jpg"/>		 
+</media>
+<para id="tag2">
+Figure 2: Picture of our Setup 
+</para>
+</section>
+
+<section id="section2">
+<title>Sampling and Frequency Analysis</title>
+<para id="para2">We sampled the analog signal of the pickup through the UCA222. The UCA222 is programmed to anti-alias and sample and forward the data into system audio. We can then access system audio via a Python library called PyAudio. PyAudio is able to give us vectors of the samples of a desired length. Compared the difference in latency to our system between different vector length and decide that 1024 was a good middle ground. We decided to further lowpass filter the sampled chunks to reduce high frequency noise introduced by the ‘fret-buzz’ and the initial attack of the guitar string.</para>
+
+<para id="eip-167"/><code id="eip-164" display="block">
+import numpy
+import pyaudio
+import scipy
+import math
+
+# constants
+fs = 44100.0
+CHUNK = 1024
+cutoff_hz = 8000.0
+nyq_rate = fs / 2. # for normalizing
+width = 1000.0/nyq_rate
+ripple_db = 30.0
+
+# open pyaudio stream
+p = pyaudio.PyAudio()
+stream = p.open(format=pyaudio.paFloat32,
+                    channels=1, rate=44100, 
+                    input=True, 
+                    output=True,
+                    frames_per_buffer=CHUNK)
+
+# build filter
+N, beta = scipy.signal.kaiserord(ripple_db, width)
+taps = scipy.signal.firwin(N, cutoff_hz/nyq_rate, window=('kaiser', beta))
+delay = 0.5 * (N-1) / fs
+
+while(True):
+    data = stream.read(CHUNK)
+    x = numpy.fromstring(data, dtype=numpy.float32)
+    x_filtered = scipy.signal.lfilter(taps, 1.0, x)
+    X = numpy.fft.fft(x_filtered)
+
+stream.close()
+p.terminate()</code>
+<para id="eip-761"/>
+<para id="eip-115">From this, we are able to analysis each frame of 1024 samples and compute the frequency content of the frames. We played a few different notes and plotted the frequency content of notes in hopes of figuring out a good way to differentiate between notes. Below are plots of a note being struck in the time domain, and frequency spectrum plots of a high and low C note.
+</para>
+<media id="time" alt="Time Domain plot of a note being played">	   
+  <image mime-type="image/png" src="../../media/timeDomain.png"/>		 
+</media>
+
+<para id="eip-453">Figure 3: Time Domain Plot of a note being played</para><media id="freq" alt="Frequency spectrum of different C notes">	   
+  <image mime-type="image/png" src="../../media/freqC.png"/>		 
+</media><para id="eip-926">Figure 4: Frequency Spectrum of a High and Low C</para>
+</section>
+
+<section id="section3">
+<title>Note Identification</title>
+<para id="bleh">After looking at the frequency domain, it is obvious that each note has one distinct peak at a particular frequency. So we decided to do note detection by finding the frequency with the largest magnitude. In other words, we are doing max-peak detection. In doing this, we took the absolute value of the frequency bins in the positive half of the spectrum and use the argmax function from the NumPy library obtain the frequency bin with the highest peak. However, in using this method we very quickly encountered a problem. When a certain note is played on the guitar, though the profile of the note in the frequency domain will not change very much, the maximum peak in fact moves around a little. Because other approach only looks at the highest peak, sometimes we will get errors when the neighboring peaks overtake the correct main peak in magnitude. When this happens our program will think the note is quickly changing, but actually it is just the same note reverberating through the guitar.
+</para><para id="eip-64">The solution we came up with to alleviate this problem is to average what the program thinks is the highest frequencies across multiple frames of data. We tested out different average lengths and found that averaging every 25 frames sounded the best. Our code will keep track of a variable-length list that contains the frequency of the highest peak per frame. At the start of every frame a new frequency value will be added to the list, and at the end of every frame the list is averaged to determine a single frequency. This list resets every 25 frames. In midst of this process, we also converted to linear frequency from FFT bins, which is done by multiplying by the ratio of the sampling frequency over half the chunk length. To further improve our results, we only added to the list frequencies if the magnitude of that particular frequency bin is above a particular value. This way our code will ignore the low amplitude noise and only record frequencies when a note is being played.</para><para id="eip-817"/><code id="code2" display="block">
+flag = 0
+freq = []
+
+while(True):
+    data = stream.read(CHUNK)
+    x = numpy.fromstring(data, dtype=numpy.float32)
+    x_filtered = scipy.signal.lfilter(taps, 1.0, x)
+    X = numpy.fft.fft(x_filtered)
+    highest_freq = numpy.argmax(abs(X[0:511]))
+    
+    flag +=1
+    if (X[highest_freq] &gt; 5000):
+        freq.append(highest_freq*44100/(CHUNK/2))
+    avg = (sum(freq)/len(freq))
+
+    if flag == 25:
+        flag = 0
+        freq = []
+</code>
+</section>
+
+<section id="section4">
+<title>Creating the Harmony</title>
+<para id="p4.1">Once we have the correct frequency and the identity of the note, we proceed to figure out the frequency of the harmonizing note. We first create a Python dictionary of musical keys mapped to a list of the corresponding frequencies of that note at different octaves. For purposes of demonstration, we only added the key of C to the dictionary. However, other keys could easily be added. We then created a function that helps on determine which harmonic we are in given a musical key and the frequency of a note. We then apply the formula for finding the harmonizing frequencies describe in the previous section to the frequency we have and obtain the frequency of the third and fifth intervals from the note being played.</para>
+<para id="eip-624"/>
+<code id="code3" display="block">
+keys = {'c':[1636,1636/2,1636/4,1636/8]}
+sBuf = 50
+
+def key_select(freq, key):
+    for f in keys[key]:
+        if freq &gt;= f:
+            return f
+    return freq
+
+def chord_freqs(key, note):
+    n = 1200*numpy.log2(note/key)
+    if(500-sBuf&lt;= n &lt;=500+sBuf or 700-sBuf&lt;= n&lt;=700+sBuf or n&lt;=sBuf):
+        f3 = note * math.pow(2, (400)/1200)
+        f5 = note * math.pow(2, (700)/1200)
+        return f3 , f5
+    elif (200-sBuf&lt;n&lt;200+sBuf or 400-sBuf&lt;n&lt;400+sBuf or 900-sBuf&lt;n&lt;900+sBuf):
+        f3 =  note * math.pow(2, (300)/1200)
+        f5 =  note * math.pow(2, (700)/1200)
+        return f3, f5
+        
+    elif (1100-sBuf&lt;n&lt;1100+sBuf):
+        f3 =  note * math.pow(2, (300)/1200)
+        f5 =  note * math.pow(2, (600)/1200)
+        return f3, f5
+    else:
+        return 0,0</code><para id="eip-879"/><para id="eip-708">After obtaining the two harmony frequencies, we tried to take them into the time domain. We initially tried add triangles of frequency content centered at the desired frequencies and then taking the inverse transform, in hope to try to mimic a "real" sound. However, doing that caused the note to sound slightly off. Also we didn't add imaginary components to the frequency and the FFT library gave us warnings. So we decided to try out other approaches. The next thing we thought of was using the Karplus-Strong Plucked String algorithm to create a realistic decaying note. But we very quickly saw that the algorithm was not really meant to be used in real time. The algorithm works by creating the complete decaying signal. However, this is problem with other stream because we can only output 1024 samples at a time, which is not long enough to squeeze the whole decay in. We thought about storing the whole signal from the Plucked String algorithm and output it a frame at a time. But doing so not only slow down our system, but also would introduce problems if we played a different note half way through a output decaying note. We ended up deciding to just output pure sine waves and worry about making it sound less synthesized in the future.
+</para>
+<para id="eip-129"/><code id="code4" display="block">
+def play_tone(stream, frequency=252, length=1, rate=44100):
+    chunks = []
+    f3 , f5 = chord_freqs(key_select(frequency, 'c'), frequency)
+    chunks.append(sine(f3, length, rate)+sine(f5, length, rate))
+
+    chunk = numpy.concatenate(chunks) * 0.25
+    stream.write(chunk.astype(numpy.float32).tostring(), CHUNK)
+
+def sine(frequency, length, rate):
+    length = int(length * rate)
+    factor = float(frequency) * (numpy.pi * 2) / rate
+    return numpy.sin(numpy.arange(length) * factor)
+</code><para id="eip-315"/><para id="eip-736">Now that we were only outputting pure sine waves, we decided that it would be faster and save computation complexity but just creating the sine waves of the correct frequencies in the time domain directly. This would save computation time as now we don't need to compute an inverse FFT. To put it all together. We output the harmonies through the PyAudio stream. The UCA222 takes this and adds it to the guitar signal that it is already forwarding to the speakers.</para></section>
+</content>
+
+</document>
